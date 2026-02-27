@@ -6,7 +6,7 @@ import threading
 
 import random
 
-from config import url, auth_token, amount 
+from config import url, auth_token, cookie, amount 
 from config import tor_mode, tor_password, proxies
 from config import max_hydras
 
@@ -68,17 +68,11 @@ def register():
 
 def farm():
     while True:
-        for urls in {"/api/runs/start", "/api/runs/finish", "/api/runs/unlock"}:
-            for code in {"bike_dream", "money_quiz", "lemonade_business", "investment_race"}:  
-                resp = requests.post(url+urls, 
-                                    headers={"Authorization": auth_token}, 
-                                    json={"scenarioCode": code}, 
-                                    proxies=proxies if tor_mode else None)
 
-
-        resp = requests.post(url+"/api/me/gems", 
-                            headers={"Authorization": auth_token}, 
-                            json=amount,
+        resp = requests.post(url+"/api/island-game", 
+                            headers={"Authorization": auth_token, 
+                                     "Content-Type": "application/json",
+                                     "Content-Length": "0"}, 
                             proxies=proxies if tor_mode else None)
             
         if resp.text == "{\"message\":\"Unauthorized\"}":
@@ -88,14 +82,8 @@ def farm():
             else:
                 register()
 
-        print("CASH OUT: " + resp.text + "\n")
+        print("CASH OUT")
         check_ban()
-
-def counter():
-    global someshit
-    someshit+=1
-    print(someshit)
-    return False
 
 def hydra():
     if not hydra_semaphore.acquire(blocking=False):
