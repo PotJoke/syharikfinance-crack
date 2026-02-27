@@ -1,8 +1,7 @@
 import requests
-from config import cookie, auth_token, url
+from config import auth_token, url
 
 headers = {
-    "Cookie": cookie,
     "Authorization": auth_token
 }
 
