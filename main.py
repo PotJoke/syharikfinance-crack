@@ -1,12 +1,15 @@
 import requests
 from tor_proxy import tor_proxy
+from stem.control import Controller
+
 import random
-from config import url, auth_token, amount, tor_mode, proxies
+
+from config import url, auth_token, amount, tor_mode, tor_password, proxies
 
 
 def web_init():
     url_check_ip="https://httpbin.org/ip"
-    print("REAL IP: " + str(requests.get(url_check_ip).json()))
+    #print("REAL IP: " + str(requests.get(url_check_ip).json()))
     if (tor_mode):
         #port=tor_proxy()
         port = 9150
@@ -19,6 +22,19 @@ def web_init():
         }
 
         print("TOR IP: " + str(requests.get(url_check_ip,proxies=proxies).json()))
+
+def change_tor_ip():
+    try:
+        with Controller.from_port(port=9051) as controller:
+            controller.authenticate(password=tor_password)
+            controller.signal('NEWNYM')
+            print("Запрос на смену IP отправлен.")
+    except Exception as e:
+        print(f"Ошибка при смене IP через Tor: {e}")
+
+def check_ban():
+    if requests.post(url+"/api/health").status_code == 403:
+        change_tor_ip()
 
 def register():
     global auth_token
@@ -45,34 +61,38 @@ def register():
     auth_token = str("Bearer " + resp.json().get("token"))
 
 def farm():
-    try:
-        counter = 12
+    counter = 12
 
-        for urls in {"/api/runs/start", "/api/runs/finish", "/api/runs/unlock"}:
-            for code in {"bike_dream", "money_quiz", "lemonade_business", "investment_race"}:  
-                resp = requests.post(url+urls, 
-                                     headers={"Authorization": auth_token}, 
-                                     json={"scenarioCode": code}, 
-                                     proxies=proxies if tor_mode else None)
+    for urls in {"/api/runs/start", "/api/runs/finish", "/api/runs/unlock"}:
+        for code in {"bike_dream", "money_quiz", "lemonade_business", "investment_race"}:  
+            resp = requests.post(url+urls, 
+                                 headers={"Authorization": auth_token}, 
+                                 json={"scenarioCode": code}, 
+                                 proxies=proxies if tor_mode else None)
 
-                print("Requests left: " + str(counter))
-                counter-=1
+            print("Requests left: " + str(counter))
+            counter-=1
 
-        resp = requests.post(url+"/api/me/gems", 
-                             headers={"Authorization": auth_token}, 
-                             json=amount,
-                             proxies=proxies if tor_mode else None)
+    resp = requests.post(url+"/api/me/gems", 
+                         headers={"Authorization": auth_token}, 
+                         json=amount,
+                         proxies=proxies if tor_mode else None)
         
-        if resp.text == "{\"message\":\"Unauthorized\"}":
-            print("UNAUTHORIZED!")
-            register()
-            
-        print("CASH OUT: " + resp.text + "\n")
+    if resp.text == "{\"message\":\"Unauthorized\"}":
+        print("UNAUTHORIZED!")
+        register()
 
-    except Exception as e:
-        print(f"ERROR OCCURED: {e}")
-
+    print("CASH OUT: " + resp.text + "\n")
+    check_ban()
 
 while True:
     web_init()
-    farm()
+    change_tor_ip()
+
+"""
+try:
+    while True:
+        farm()
+except Exception as e:
+    print(f"ERROR OCCURED: {e}")
+"""

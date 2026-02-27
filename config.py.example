@@ -4,6 +4,8 @@ url = "..."
 
 tor_mode = True
 
+tor_password = "..."
+
 proxies = {}
 
 amount = {"amount":10}
