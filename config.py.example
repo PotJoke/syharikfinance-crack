@@ -1,11 +1,10 @@
 global auth_token 
 auth_token = "Bearer ..."
 url = "..."
+amount = {"amount":10}
 
 tor_mode = True
-
-tor_password = "..."
-
+tor_password = "password"
 proxies = {}
 
-amount = {"amount":10}
+max_hydras = 64
