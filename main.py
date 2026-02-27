@@ -85,14 +85,11 @@ def farm():
     print("CASH OUT: " + resp.text + "\n")
     check_ban()
 
-while True:
-    web_init()
-    change_tor_ip()
 
-"""
+web_init()
+
 try:
     while True:
         farm()
 except Exception as e:
     print(f"ERROR OCCURED: {e}")
-"""
