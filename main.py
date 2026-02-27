@@ -9,6 +9,9 @@ amount = {
     "amount":10
 }
 
+r= requests.get(r'http://jsonip.com')
+print('Your IP is {}'.format(r.json()['ip']))
+
 try:
     while True:
             counter = 12
