@@ -1,2 +1,9 @@
+global auth_token 
 auth_token = "Bearer ..."
 url = "..."
+
+tor_mode = True
+
+proxies = {}
+
+amount = {"amount":10}
