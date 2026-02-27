@@ -1,0 +1,3 @@
+cookie = "..."
+auth_token = "Bearer ..."
+url = "..."

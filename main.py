@@ -1,28 +1,26 @@
 import requests
-import urllib3
-
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-auth = "" #YOUR TOKEN
-cookie = "" #YOUR COOKIE
+from config import cookie, auth_token, url
 
 headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0",
-    "Cookie": str({cookie}),
-    "Authorization": str({auth})
+    "Cookie": cookie,
+    "Authorization": auth_token
 }
 
 amount = {
-    "amount":"15"
+    "amount":10
 }
-
-url = "XXX/api/me/gems" #URL HIDDEN
 
 try:
     while True:
-        response = requests.post(url, headers=headers, json=amount, verify=False)
-        print(f"RESPONSE: {response.status_code}")
-        print(response.text)
+            counter = 12
+
+            for urls in {"/api/runs/start", "/api/runs/finish", "/api/runs/unlock"}:
+                for code in {"bike_dream", "money_quiz", "lemonade_business", "investment_race"}:
+                    resp = requests.post(url+urls, headers=headers, json={"scenarioCode": code})
+                    print("Requests left: " + str(counter))
+                    counter-=1
+
+            print("CASH OUT: " + requests.post(url+"/api/me/gems", headers=headers, json=amount).text + "\n")
 
 except Exception as e:
     print(f"ERROR OCCURED: {e}")
