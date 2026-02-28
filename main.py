@@ -6,7 +6,7 @@ import threading
 
 import random
 
-from config import url, auth_token, cookie, amount 
+from config import url, auth_token
 from config import tor_mode, tor_password, proxies
 from config import max_hydras
 
@@ -34,9 +34,9 @@ def change_tor_ip():
         with Controller.from_port(port=9051) as controller:
             controller.authenticate(password=tor_password)
             controller.signal('NEWNYM')
-            print("Запрос на смену IP отправлен.")
+            print("IP CHANGE REQUESTED")
     except Exception as e:
-        print(f"Ошибка при смене IP через Tor: {e}")
+        print(f"Error changing IP: {e}")
 
 def check_ban():
     if requests.post(url+"/api/health").status_code == 403:
@@ -45,8 +45,8 @@ def check_ban():
 def register():
     global auth_token
 
-    login = str(random.choice(["user", "finger", "tester"])) + str(random.randint(1,1000000))
-    email = login + "@example.com"
+    login = str(random.choice(["user", "bot", "tester"])) + str(random.randint(1,1000000))
+    email = login + "@gmail.com"
     password = "123456"
 
     print(f"REGISTERING NEW ACCOUNT: {login}:{password}")
@@ -54,17 +54,20 @@ def register():
     resp = requests.post(url+"/api/auth/register", 
                          json={"login":login,"name":login,"email":email,"password":password},
                          proxies=proxies if tor_mode else None)
+    print(resp.text)
     code = str(resp.json().get("devCode"))
 
     resp = requests.post(url+"/api/auth/verify", 
                          json={"email": email, "code": code},
                          proxies=proxies if tor_mode else None)
+    print(resp.text)
 
     resp = requests.post(url+"/api/auth/login", 
                          json={"loginOrEmail":login,"password":password},
                          proxies=proxies if tor_mode else None)
+    print(resp.text)
     
-    auth_token = str("Bearer " + resp.json().get("token"))
+    auth_token = str("Bearer " + str(resp.json().get("token")))
 
 def farm():
     while True:

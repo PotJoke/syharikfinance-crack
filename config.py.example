@@ -1,10 +1,9 @@
-global auth_token 
-auth_token = "Bearer ..."
-url = "..."
-amount = {"amount":10}
+global auth_token #Do not touch
+auth_token = "Bearer ..." #Insert your Token
+url = "..." #Insert victim address
 
-tor_mode = True
-tor_password = "password"
-proxies = {}
+tor_mode = True #Do not touch
+tor_password = "password" #Insert your tor password
+proxies = {} #DO NOT CHANGE IT
 
-max_hydras = 64
+max_hydras = 64 #More bots
